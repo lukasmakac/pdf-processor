@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Success</title>
+</head>
+<body>
+<h1>Upload Successful</h1>
+<p th:text="${message}"></p>
+<p>Converted text file: <a th:href="@{${txtFilePath}}" th:text="${txtFilePath}"></a></p>
+<a href="/upload">Go back to upload another file</a>
+
+<p>Are the following references correct?</p>
+<button id="yesButton">Yes</button>
+<button id="noButton">No</button>
+
+<div id="references" style="display: block;">
+    <!-- Zobrazenie textu referencií -->
+    <div th:utext="${referencesText}"></div>
+</div>
+
+<div id="fullText" style="display: none;">
+    <h3>Full text:</h3>
+    <pre th:utext="${fullText}" id="fullTextContent" style="border: 1px solid #ccc; padding: 10px; cursor: text;"></pre>
+    <button id="saveSelectedText">Save Selected References</button>
+</div>
+
+<button id="showReferences">Show saved references</button>
+<div id = "savedReferences" ></div>
+
+<script>
+    // Zobrazenie celého textu pri kliknutí na "No"
+    document.getElementById("noButton").addEventListener("click", function(){
+        document.getElementById("fullText").style.display = "block";
+        document.getElementById("references").style.display = "none";
+    });
+
+    // Uloženie vybraného textu
+    document.getElementById("saveSelectedText").addEventListener("click", function () {
+        // Získanie vybraného textu
+        const selection = window.getSelection().toString().trim();
+
+        if (!selection) {
+            alert("Please select some text to save.");
+            return;
+        }
+
+        // Poslanie vybraného textu na server
+        fetch('/saveReferences', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ selectedText: selection }),
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert("Selected references saved successfully.");
+                } else {
+                    return response.text().then(err => { throw new Error(err); });
+                }
+            })
+            .catch(error => console.error("Error saving references:", error));
+    });
+
+    document.getElementById("showReferences").addEventListener("click", function () {
+        fetch('/getReferences')
+            .then(response => {
+                if(!response.ok) {
+                    return response.text().then(err => {
+                        throw new Error(err);
+                    });
+                }
+                return response.text(); // references as one string
+            })
+            .then(data => {
+                const savedReferencesDiv = document.getElementById("savedReferences");
+                console.log(data);
+                savedReferencesDiv.innerHTML = data.replace(/\n/g, '<br>'); // replace newLine for HTML tag
+            })
+            .catch(error => console.error("Error fetching references: ", error));
+    });
+
+
+</script>
+</body>
+</html>
