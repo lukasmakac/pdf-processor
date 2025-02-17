@@ -2,9 +2,6 @@ package com.dre0059.articleprocessor.model;
 
 import jakarta.persistence.*;
 
-import javax.print.Doc;
-import java.util.List;
-
 @Entity
 @Table(name = "references")
 public class Reference {
@@ -16,26 +13,26 @@ public class Reference {
     private String orderNumber;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "ID_fromDocument")
-    private Document fromDocument;
+    @JoinColumn(name = "fromDocument")
+    private Dokument fromDocument;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "ID_toDocument")
-    private Document toDocument;
+    @JoinColumn(name = "toDocument")
+    private Dokument toDocument;
 
     public Reference() {}
-    public Reference(String orderNumber, Document fromDocument, Document toDocument) {
+    public Reference(String orderNumber, Dokument fromDocument, Dokument toDocument) {
         this.orderNumber = orderNumber;
         this.fromDocument = fromDocument;
         this.toDocument = toDocument;
     }
 
     public String getOrderNumber() { return orderNumber; }
-    public Document getFromDocument() { return fromDocument; }
-    public Document getToDocument() { return toDocument; }
+    public Dokument getFromDocument() { return fromDocument; }
+    public Dokument getToDocument() { return toDocument; }
     public Long getId() { return id; }
 
-    public void setFromDocument(Document fromDocument) { this.fromDocument = fromDocument; }
-    public void setToDocument(Document toDocument) { this.toDocument = toDocument; }
+    public void setFromDocument(Dokument fromDocument) { this.fromDocument = fromDocument; }
+    public void setToDocument(Dokument toDocument) { this.toDocument = toDocument; }
     public void setOrderNumber(String orderNumber) { this.orderNumber = orderNumber; }
 }

@@ -17,7 +17,7 @@ public class Author {
     private String surname;
 
     @ManyToMany(mappedBy = "authors")
-    private List<Document> documents = new ArrayList<Document>();
+    private List<Dokument> documents = new ArrayList<Dokument>();
 
     public Author(){}
     public Author(String name, String surname) {
@@ -28,9 +28,9 @@ public class Author {
     public Long getId() { return id; }
     public String getName() { return name; }
     public String getSurname() { return surname; }
-    public List<Document> getDocuments() { return documents; }
+    public List<Dokument> getDocuments() { return documents; }
 
     public void setName(String name) { this.name = name; }
     public void setSurname(String surname) { this.surname = surname; }
-    public void setDocuments(List<Document> documents) { this.documents = documents; }
+    public void setDocuments(List<Dokument> documents) { this.documents = documents; }
 }

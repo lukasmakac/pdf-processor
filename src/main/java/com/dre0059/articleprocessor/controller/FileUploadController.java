@@ -2,6 +2,7 @@ package com.dre0059.articleprocessor.controller;
 
 import com.dre0059.articleprocessor.GrobidClient;
 import com.dre0059.articleprocessor.model.DocumentMetadata;
+import com.dre0059.articleprocessor.service.HeaderService;
 import com.dre0059.articleprocessor.service.MetadataParser;
 import com.dre0059.articleprocessor.repository.DocumentRepository;
 import com.dre0059.articleprocessor.repository.ReferenceRepository;
@@ -17,6 +18,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -33,15 +37,20 @@ import java.util.Map;
 @Controller
 @RequestMapping("/api/grobid")
 public class FileUploadController {
-    private static final Logger logger = LoggerFactory.getLogger(FileUploadController.class);
     private final GrobidClient grobidClient;
-    private final DocumentRepository metadataRepository;
-    private final ReferenceRepository referenceRepository;
+    private final HeaderService headerService;
 
-    public FileUploadController(GrobidClient grobidClient, DocumentRepository metadataRepository, ReferenceRepository referenceRepository) {
+    //private final DocumentRepository metadataRepository;
+    //private final ReferenceRepository referenceRepository;
+    //private final MetadataParser metadataParser;
+    //private static final Logger logger = LoggerFactory.getLogger(FileUploadController.class);
+
+    public FileUploadController(GrobidClient grobidClient, HeaderService headerService/*, DocumentRepository metadataRepository, ReferenceRepository referenceRepository, MetadataParser metadataParser*/) {
         this.grobidClient = grobidClient;
-        this.metadataRepository = metadataRepository;
-        this.referenceRepository = referenceRepository;
+        this.headerService = headerService;
+      //  this.metadataRepository = metadataRepository;
+        //this.referenceRepository = referenceRepository;
+        //this.metadataParser = metadataParser;
     }
 
     @GetMapping("/upload")
@@ -51,51 +60,41 @@ public class FileUploadController {
 
     @PostMapping("/upload")
     @ResponseBody
-    public Mono<ResponseEntity<Map<String, String>>> handleFileUpload(@RequestParam("file") MultipartFile file) {
-        logger.info("Received file: {}", file.getOriginalFilename());
+    public ResponseEntity<String> handleFileUpload(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("No file uploaded!");
+        }
 
-        return Mono.fromCallable(() -> {
-            Path tempFile = Files.createTempFile("upload-", ".pdf");
-            file.transferTo(tempFile.toFile());
-            return tempFile.toFile();
-        }).flatMap(pdfFile -> {
-            Mono<String> metadataMono = grobidClient.processHeader(pdfFile);
-            Mono<String> referencesMono = grobidClient.processReferences(pdfFile);
+        System.out.println("Received file: " + file.getOriginalFilename());
 
-            return Mono.zip(metadataMono, referencesMono)
-                    .flatMap(result -> {
-                        String metadataJson = result.getT1();
-                        String referencesXml = result.getT2();
+        try {
+            // Vytvorenie dočasného súboru
+            File tmpFile = File.createTempFile("article-", ".pdf");
 
-                        String title = MetadataParser.extractTitle(metadataJson);
-                        List<String> authors = MetadataParser.extractAuthors(metadataJson);
+            // save data from file to tmpFile
+            try(FileOutputStream stream = new FileOutputStream(tmpFile)) {
+                stream.write(file.getBytes());
+             } catch (IOException e) {
+                return ResponseEntity.internalServerError().body("FAILURE - cannot process file : " + e.getMessage());
+            }
 
-                        return Mono.justOrEmpty(metadataRepository.findByTitle(title))
-                                .map(existing -> {
-                                    logger.warn("Article with title '{}' already exists!", title);
-                                    return ResponseEntity.status(HttpStatus.CONFLICT)
-                                            .body(Map.of("error", "Article is already in database."));
-                                })
-                                .switchIfEmpty(Mono.fromCallable(() -> {
-                                    DocumentMetadata doc = new DocumentMetadata(title, authors);
-                                    metadataRepository.save(doc);
+            String header = grobidClient.processHeader(tmpFile);
+            String references = grobidClient.processReferences(tmpFile);
 
-                                    // Spracovanie referencií cez TEIparser
-                                    TEIparser teiParser = new TEIparser(referenceRepository);
-                                    teiParser.parseAndSaveToDB(referencesXml, doc);
+            headerService.processHeader(header);
 
-                                    Map<String, String> response = new HashMap<>();
-                                    response.put("metadata", metadataJson);
-                                    response.put("references", referencesXml);
+            System.out.println(header);
+            //System.out.println(references);
 
-                                    return ResponseEntity.ok(response);
-                                }));
-                    })
-                    .onErrorResume(e -> {
-                        logger.error("Error processing PDF", e);
-                        return Mono.just(ResponseEntity.internalServerError().body(Map.of("error", "Failed to process PDF")));
-                    });
-        });
+            tmpFile.delete();
+
+            return ResponseEntity.ok(header);
+
+
+        } catch (IOException e) {
+            System.out.println("Chyba pri vytváraní dočasného súboru" + e);
+            return ResponseEntity.status(500).body("Chyba pri vytváraní dočasného súboru.");
+        }
     }
 
 

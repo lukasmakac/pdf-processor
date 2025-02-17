@@ -21,24 +21,40 @@ public class GrobidClient {
     }
 
     // get METADATA of the file
-    public Mono<String> processHeader(File pdfFile){    // Mono - vráti jeden string, výsledok je JSON
+    public String processHeader(File pdfFile){    // Mono - vráti jeden string, výsledok je JSON
         return webClient.post()
                 .uri("/api/processHeaderDocument")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData("input", new FileSystemResource(pdfFile)))
-                .attribute("consolidateHeader", 1)
+                .attribute("consolidateHeader", 1)  // Možnosť na zjednotenie hlavičky
+                .attribute("includeRawAffiliations", 1)    // Prípadne pridať ďalšie parametre, ak Grobid podporuje takéto rozšírenie
+                .attribute("includeRawCopyrights", 1)    // Prípadne pridať ďalšie parametre, ak Grobid podporuje takéto rozšírenie
+                //.attribute("includeReferences", 1) // Možnosť pridať aj referencie priamo do hlavičky
                 .retrieve()
-                .bodyToMono(String.class);
+                .bodyToMono(String.class)
+                .block();   // returns String instead of Mono<String>
     }
 
+    public String processFullMetadata(File pdfFile) {
+        return webClient.post()
+                .uri("/api/processFullMetadata")
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData("input", new FileSystemResource(pdfFile)))
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+    }
+
+
     // spracuje REFERENCIE z PDF
-    public Mono<String> processReferences(File pdfFile){
+    public String processReferences(File pdfFile){
         return webClient.post()
                 .uri("/api/processReferences")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData("input", new FileSystemResource(pdfFile)))
                 .retrieve()
-                .bodyToMono(String.class);
+                .bodyToMono(String.class)
+                .block();
     }
 
 }

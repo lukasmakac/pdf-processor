@@ -1,26 +1,27 @@
 package com.dre0059.articleprocessor.model;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.CollectionId;
-import com.dre0059.articleprocessor.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "documents")
-public class Document {
+public class Dokument {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "title")
     private String title;
-    private Integer year;
+
+    @Column(name = "publication_year")
+    private Integer publicationYear;
     private String doi;
 
-    @Column(name = "abstractText")
-    private String abstractText;
+    //@Column(name = "abstractText", columnDefinition = "TEXT")
+    //private String abstractText;
 
     private Integer pages;
     private String publisher;
@@ -34,29 +35,31 @@ public class Document {
             joinColumns = @JoinColumn(name = "ID_document"),
             inverseJoinColumns = @JoinColumn(name = "ID_author")
     )
+
     private List<Author> authors = new ArrayList<>();
 
-    public Document() {}
+    public Dokument() {}
 
-    public Document(String title, Integer year, String doi, String abstractText, Integer pages, String publisher) {
+    public Dokument(String title, Integer year, String doi, /*String abstractText,*/ Integer pages, String publisher) {
         this.title = title;
-        this.year = year;
+        this.publicationYear = year;
         this.doi = doi;
-        this.abstractText = abstractText;
+        //this.abstractText = abstractText;
         this.pages = pages;
         this.publisher = publisher;
     }
 
     public Long getId() { return id; }
     public String getTitle() { return title; }
-    public Integer getYear() { return year; }
+    public Integer getYear() { return publicationYear; }
     public String getDoi() { return doi; }
-    public String getAbstractText() { return abstractText; }
+    //public String getAbstractText() { return abstractText; }
     public Integer getPages() { return pages; }
     public String getPublisher() { return publisher; }
     public List<Reference> getReferences() { return references; }
     public List<Author> getAuthors() { return authors; }
 
-    public void setAuthors(List<Author> authors) { this.authors = authors; }
 
+    public void setAuthors(List<Author> authors) { this.authors = authors; }
+    public void setTitle(String title) { this.title = title; }
 }

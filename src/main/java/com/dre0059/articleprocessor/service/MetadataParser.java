@@ -1,10 +1,7 @@
 package com.dre0059.articleprocessor.service;
 
-import com.dre0059.articleprocessor.model.Author;
-import com.dre0059.articleprocessor.model.Document;
-import com.dre0059.articleprocessor.repository.AuthorRepository;
-import com.dre0059.articleprocessor.repository.DocumentRepository;
-import com.dre0059.articleprocessor.repository.ReferenceRepository;
+import com.dre0059.articleprocessor.model.*;
+import com.dre0059.articleprocessor.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +24,7 @@ public class MetadataParser {
         this.authorRepository = authorRepository;
     }
 
-    public Document parseBibTeX(String bibtexString) {
+    public Dokument parseBibTeX(String bibtexString) {
         // Regular expression pre získanie hodnôt z BibTeX formátu
         Pattern pattern = Pattern.compile("@.*?\\{.*?,\\s*author\\s*=\\s*\\{(.*?)\\},\\s*title\\s*=\\s*\\{(.*?)\\},\\s*doi\\s*=\\s*\\{(.*?)\\},\\s*abstract\\s*=\\s*\\{(.*?)\\}");
         Matcher matcher = pattern.matcher(bibtexString);
@@ -40,10 +37,10 @@ public class MetadataParser {
 
             List<Author> authors = parseAuthors(authorsRaw);
 
-            Document document = new Document(title, null, doi, abstractText, null, null);
+            Dokument document = new Dokument(title, null, doi, null, null);
             document.setAuthors(authors);
 
-            documentRepository.save(document);
+            //documentRepository.save(document);
 
             for (Author author : authors) {
                 authorRepository.save(author);
