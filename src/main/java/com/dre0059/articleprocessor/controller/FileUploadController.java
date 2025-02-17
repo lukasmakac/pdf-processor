@@ -1,7 +1,6 @@
 package com.dre0059.articleprocessor.controller;
 
 import com.dre0059.articleprocessor.GrobidClient;
-import com.dre0059.articleprocessor.model.DocumentMetadata;
 import com.dre0059.articleprocessor.service.HeaderService;
 import com.dre0059.articleprocessor.service.MetadataParser;
 import com.dre0059.articleprocessor.repository.DocumentRepository;

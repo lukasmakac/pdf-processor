@@ -40,7 +40,7 @@ public class TEIparser {
                 referencedDocument.setTitle(title);
 
                 Author author = new Author();
-                author.setSurname(authorSurname);
+                author.setLastname(authorSurname);
                 referencedDocument.setAuthors(List.of(author));
 
                 Dokument savedReferencedDocument = documentService.saveDocument(referencedDocument);

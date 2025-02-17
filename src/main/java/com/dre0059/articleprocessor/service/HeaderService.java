@@ -7,8 +7,10 @@ import com.dre0059.articleprocessor.repository.DocumentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,7 +45,7 @@ public class HeaderService {
         this.publisher = this.parseHeaderFields(header, "publisher");
 
         if(this.parseHeaderFields(header, "year").equals("Not found")){
-            this.year = -1;
+            this.year = 0;
         }
         if(this.parseHeaderFields(header, "pages").equals("Not found")){
             this.pages = 0;
@@ -54,9 +56,14 @@ public class HeaderService {
             authorList = this.saveAuthorNameAndSurname(this.author);
         }
 
-        for(Author author : authorList){
-            authorRepository.save(author);
+        authorRepository.saveAll(authorList);
+
+        // check duplicity of the document
+        if(documentRepository.existsByTitleAndAuthorsIn(title, authorList)){
+            System.out.println("Document with this title and authors already exist");
+            return;
         }
+
 
         Dokument dokument = new Dokument(title, year, doi, pages, publisher);
         dokument.setAuthors(authorList);
@@ -88,6 +95,7 @@ public class HeaderService {
             String[] nameParts = fullName.split(",");
 
             String firstName;
+            String lastName = nameParts[1];
             if(nameParts.length > 2){
                 // have two names
                 firstName = nameParts[0] + " " + nameParts[2];
@@ -95,7 +103,16 @@ public class HeaderService {
                 firstName = nameParts[0];
             }
 
-            authors.add(new Author(nameParts[1], firstName));
+            // check if author already exists
+            Optional<Author> existingAuthor = authorRepository.findByFullName(lastName, firstName);
+            if (existingAuthor.isPresent()) {
+                authors.add(existingAuthor.get());
+            } else {
+                Author newAuthor = new Author(lastName, firstName);
+                authors.add(newAuthor);
+            }
+
+            //authors.add(new Author(lastName, firstName));
         }
 
         return authors;

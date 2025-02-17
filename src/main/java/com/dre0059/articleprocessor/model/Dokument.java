@@ -1,6 +1,7 @@
 package com.dre0059.articleprocessor.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Cascade;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ public class Dokument {
     private Integer publicationYear;
     private String doi;
 
+    // @Lob for huge text
     //@Column(name = "abstractText", columnDefinition = "TEXT")
     //private String abstractText;
 
@@ -36,6 +38,7 @@ public class Dokument {
             inverseJoinColumns = @JoinColumn(name = "ID_author")
     )
 
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Author> authors = new ArrayList<>();
 
     public Dokument() {}
@@ -62,4 +65,24 @@ public class Dokument {
 
     public void setAuthors(List<Author> authors) { this.authors = authors; }
     public void setTitle(String title) { this.title = title; }
+
+    public void setPublicationYear(Integer publicationYear) {
+        this.publicationYear = publicationYear;
+    }
+
+    public void setDoi(String doi) {
+        this.doi = doi;
+    }
+
+    public void setPages(Integer pages) {
+        this.pages = pages;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    public void setReferences(List<Reference> references) {
+        this.references = references;
+    }
 }
