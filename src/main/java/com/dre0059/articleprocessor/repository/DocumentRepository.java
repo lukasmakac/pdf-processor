@@ -14,6 +14,28 @@ import java.util.Optional;
 @Repository
 public interface DocumentRepository extends JpaRepository<Dokument, Long> {
 
-    @Query("SELECT COUNT(d) > 0 FROM Dokument d JOIN d.authors a WHERE d.title = :title AND a IN :authors")
-    boolean existsByTitleAndAuthorsIn(@Param("title") String title, @Param("authors") List<Author> authors);
+    @Query(
+            "SELECT COUNT(d) > 0 " +
+            "FROM Dokument d " +
+            "JOIN d.authors a " +
+            "WHERE d.title = :title " +
+            "AND a.lastName IN :lastNames"
+    )
+    boolean existsByTitleAndAuthorsIn(@Param("title") String title, @Param("lastNames") List<String> lastNames);
 }
+
+/*
+    // save only if all authors are the same
+    @Query("""
+        SELECT COUNT(d) > 0
+        FROM Dokument d
+        WHERE d.title = :title
+        AND SIZE(d.authors) = :authorCount
+        AND EXISTS (
+            SELECT 1 FROM Dokument d2 JOIN d2.authors a2
+            WHERE d2.id = d.id AND a2 IN :authors
+        )
+        """)
+    boolean existsByTitleAndAuthors(@Param("title") String title, @Param("authors") List<Author> authors, @Param("authorCount") int authorCount);
+
+ */

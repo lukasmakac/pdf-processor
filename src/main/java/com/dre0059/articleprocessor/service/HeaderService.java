@@ -40,30 +40,46 @@ public class HeaderService {
 
     public void processHeader(String header){
         this.title = this.parseHeaderFields(header, "title");
-        this.doi = this.parseHeaderFields(header, "doi");
-        this.abstractText = this.parseHeaderFields(header, "abstract");
-        this.publisher = this.parseHeaderFields(header, "publisher");
 
-        if(this.parseHeaderFields(header, "year").equals("Not found")){
-            this.year = 0;
+        if(!this.parseHeaderFields(header, "doi").equals("Not found")){
+            this.doi = this.parseHeaderFields(header, "doi");
         }
-        if(this.parseHeaderFields(header, "pages").equals("Not found")){
-            this.pages = 0;
+        if(!this.parseHeaderFields(header, "abstract").equals("Not found")){
+            this.abstractText = this.parseHeaderFields(header, "abstract");
+        }
+        if(!this.parseHeaderFields(header, "publisher").equals("Not found")){
+            this.publisher = this.parseHeaderFields(header, "publisher");
         }
 
+        if(!this.parseHeaderFields(header, "year").equals("Not found")){
+            String yearString = this.parseHeaderFields(header, "year");
+            this.year = Integer.parseInt(yearString);
+        }
+        if(!this.parseHeaderFields(header, "pages").equals("Not found")){
+            String pagesString = this.parseHeaderFields(header, "pages");
+            this.pages = Integer.parseInt(pagesString);
+        }
         this.author = this.parseHeaderFields(header, "author");
         if(!this.author.equals("Not found")){
             authorList = this.saveAuthorNameAndSurname(this.author);
         }
 
-        authorRepository.saveAll(authorList);
+        List<String> authorLastNames= authorList.stream().map(Author::getLastname).toList();
+        System.out.println("Author list before checking duplicity: " + authorList);
+        System.out.println("Author last names before checking duplicity: " + authorLastNames);
+
+        // tu dostávam error :
+        boolean headerDuplicity = documentRepository.existsByTitleAndAuthorsIn(title, authorLastNames);
 
         // check duplicity of the document
-        if(documentRepository.existsByTitleAndAuthorsIn(title, authorList)){
+        if(headerDuplicity){
             System.out.println("Document with this title and authors already exist");
             return;
         }
 
+
+
+        authorRepository.saveAll(authorList);
 
         Dokument dokument = new Dokument(title, year, doi, pages, publisher);
         dokument.setAuthors(authorList);
