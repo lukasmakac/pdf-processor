@@ -8,11 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+// TODO :
+//  1. VALIDATE author based on surname and first INITIAL of the firstName.
+//      SOLUTION : change keys of the map on surname and first initial and compare it with surname and first initial of author
+//  2.
 
 @Service
 public class HeaderService {
@@ -77,13 +80,10 @@ public class HeaderService {
             return;
         }
 
-
-
-        authorRepository.saveAll(authorList);
-
+        List<Author> savedAuthors = authorRepository.saveAll(authorList);
         Dokument dokument = new Dokument(title, year, doi, pages, publisher);
-        dokument.setAuthors(authorList);
 
+        dokument.setAuthors(savedAuthors);
         this.documentRepository.save(dokument);
     }
 
@@ -100,37 +100,41 @@ public class HeaderService {
     }
 
     private List<Author> saveAuthorNameAndSurname(String author){
-        // "and" divide our authors
+        // "and" divides our authors
         String[] authorNames = author.split(" and ");
-
         List<Author> authors = new ArrayList<>();
+        List<Author> databaseAuthors = authorRepository.findAll();
 
-        System.out.println("Author is : \n" + author);
+        Map<String, Author> authorMap = new HashMap<>();
+        for(Author existingAuthor : databaseAuthors){
+            String key = existingAuthor.getLastname().toLowerCase() + "," + existingAuthor.getFirstname().toLowerCase();
+            authorMap.put(key, existingAuthor);
+        }
 
         for(String fullName : authorNames){
             String[] nameParts = fullName.split(",");
 
             String firstName;
-            String lastName = nameParts[1];
+            String lastName = nameParts[1].trim();
             if(nameParts.length > 2){
                 // have two names
-                firstName = nameParts[0] + " " + nameParts[2];
+                firstName = nameParts[0].trim() + " " + nameParts[2].trim();
             } else {
-                firstName = nameParts[0];
+                firstName = nameParts[0].trim();
             }
 
-            // check if author already exists
-            Optional<Author> existingAuthor = authorRepository.findByFullName(lastName, firstName);
-            if (existingAuthor.isPresent()) {
-                authors.add(existingAuthor.get());
+            String authorKey = lastName.toLowerCase() + "," + firstName.toLowerCase();
+
+            if(authorMap.containsKey(authorKey)){
+                authors.add(authorMap.get(authorKey));
+                System.out.println("This author already exists in the database : " + authorKey);
             } else {
-                Author newAuthor = new Author(lastName, firstName);
+                Author newAuthor = new Author(firstName, lastName);
                 authors.add(newAuthor);
+                authorMap.put(authorKey, newAuthor);
             }
-
-            //authors.add(new Author(lastName, firstName));
         }
 
-        return authors;
+        return authorRepository.saveAll(authors);
     }
 }
