@@ -3,6 +3,7 @@ package com.dre0059.articleprocessor.controller;
 import com.dre0059.articleprocessor.GrobidClient;
 import com.dre0059.articleprocessor.service.HeaderService;
 
+import com.dre0059.articleprocessor.service.ReferenceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,18 +19,12 @@ import java.io.IOException;
 public class FileUploadController {
     private final GrobidClient grobidClient;
     private final HeaderService headerService;
+    private final ReferenceService referenceService;
 
-    //private final DocumentRepository metadataRepository;
-    //private final ReferenceRepository referenceRepository;
-    //private final MetadataParser metadataParser;
-    //private static final Logger logger = LoggerFactory.getLogger(FileUploadController.class);
-
-    public FileUploadController(GrobidClient grobidClient, HeaderService headerService/*, DocumentRepository metadataRepository, ReferenceRepository referenceRepository, MetadataParser metadataParser*/) {
+    public FileUploadController(GrobidClient grobidClient, HeaderService headerService, ReferenceService referenceService) {
         this.grobidClient = grobidClient;
         this.headerService = headerService;
-      //  this.metadataRepository = metadataRepository;
-        //this.referenceRepository = referenceRepository;
-        //this.metadataParser = metadataParser;
+        this.referenceService = referenceService;
     }
 
     @GetMapping("/upload")
@@ -61,9 +56,10 @@ public class FileUploadController {
             String references = grobidClient.processReferences(tmpFile);
 
             headerService.processHeader(header);
+            referenceService.extractReferences(references);
 
             System.out.println(header);
-            //System.out.println(references);
+            System.out.println(references);
 
             tmpFile.delete();
 

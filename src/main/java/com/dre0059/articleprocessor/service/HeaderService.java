@@ -22,6 +22,7 @@ public class HeaderService {
 
     private final DocumentRepository documentRepository;
     private final AuthorRepository authorRepository;
+    private final ReferenceService referenceService;
 
     //public Dokument(String title, Integer year, String doi, String abstractText, Integer pages, String publisher) {
 
@@ -36,9 +37,10 @@ public class HeaderService {
     private String author;
 
     @Autowired
-    public HeaderService(DocumentRepository documentRepository, AuthorRepository authorRepository) {
+    public HeaderService(DocumentRepository documentRepository, AuthorRepository authorRepository, ReferenceService referenceService) {
         this.documentRepository = documentRepository;
         this.authorRepository = authorRepository;
+        this.referenceService = referenceService;
     }
 
     public void processHeader(String header){
@@ -85,6 +87,10 @@ public class HeaderService {
 
         dokument.setAuthors(savedAuthors);
         this.documentRepository.save(dokument);
+
+        // set the document, which has the list of references
+        referenceService.setFromDocument(dokument);
+
     }
 
     private String parseHeaderFields(String header, String field){

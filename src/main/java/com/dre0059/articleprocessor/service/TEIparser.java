@@ -1,4 +1,4 @@
-package com.dre0059.articleprocessor.service;
+/*package com.dre0059.articleprocessor.service;
 
 import com.dre0059.articleprocessor.model.Author;
 import com.dre0059.articleprocessor.model.Dokument;
@@ -61,3 +61,5 @@ public class TEIparser {
     }
 
 }
+
+ */
