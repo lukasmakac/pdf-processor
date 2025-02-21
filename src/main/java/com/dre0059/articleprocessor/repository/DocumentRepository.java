@@ -22,6 +22,16 @@ public interface DocumentRepository extends JpaRepository<Dokument, Long> {
             "AND a.lastName IN :lastNames"
     )
     boolean existsByTitleAndAuthorsIn(@Param("title") String title, @Param("lastNames") List<String> lastNames);
+
+
+    @Query(
+            "SELECT d FROM Dokument d " +
+                    "JOIN d.authors a " +
+                    "WHERE d.title = :title " +
+                    "AND a.lastName IN :lastNames"
+    )
+    Optional<Dokument> findByTitleAndAuthorsIn(@Param("title") String title, @Param("lastNames") List<String> lastNames);
+
 }
 
 /*

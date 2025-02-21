@@ -21,44 +21,40 @@ import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 // TODO :
 //  1. uložiť prepojenie toDocument a fromDocument do tabuľky referencie
 //  2. vytiahnuť orderNumber z referencie (toto riešiť cez GROBID)
 //  3. aktuálne sa mi toDocument ukladá vždy ako nový.. ja ho potrebujem vyhľadať a na základe toho uložiť alebo prepojiť
+//  4. uložiť záznam do tabuľky references
+//  5. ak už bolo PDF raz uložené, uloží sa mi "null" článok, prepojený s autormi - VYRIESIT
+
 
 @Service
 public class ReferenceService {
 
     private final DocumentRepository documentRepository;
     private final AuthorRepository authorRepository;
-
-    //private String title;
-    private Integer year;
-    private String doi;
-    private String abstractText;
-    private Integer pages;
-    private String publisher;
-
-    private String author;
-    private List<Author> authorList = new ArrayList<>();
+    private final ReferenceRepository referenceRepository;
 
     private Dokument fromDocument;
     private Dokument toDocument;
 
-
     @Autowired
-    public ReferenceService(DocumentRepository documentRepository, AuthorRepository authorRepository) {
+    public ReferenceService(DocumentRepository documentRepository, AuthorRepository authorRepository, ReferenceRepository referenceRepository) {
         this.documentRepository = documentRepository;
         this.authorRepository = authorRepository;
+        this.referenceRepository = referenceRepository;
     }
 
     public void setFromDocument(Dokument fromDocument) {
         this.fromDocument = fromDocument;
+        System.out.println("From document: " + fromDocument.getTitle());
+    }
+
+    public void setToDocument(Dokument doc){
+        this.toDocument = doc;
     }
 
     public void extractReferences(String xmlTeiReferences) {
@@ -84,18 +80,34 @@ public class ReferenceService {
 
             NodeList biblNodes = (NodeList) xpath.evaluate("//tei:biblStruct", doc, XPathConstants.NODESET);
 
+            // for each reference
             for (int i = 0; i < biblNodes.getLength(); i++) {
                 Node biblNode = biblNodes.item(i);
-                Dokument toDokument = new Dokument();
+                Dokument referencedDocument = new Dokument();
 
                 // Extract title - toDocument
                 String title = xpath.evaluate(".//tei:title[@level='m' or @level='a']", biblNode);
-                toDokument.setTitle(title);
+                referencedDocument.setTitle(title);
+
+                // Extract year of publication
+                String yearStr = xpath.evaluate(".//tei:date[@type='published']/@when", biblNode);
+                if (yearStr != null && !yearStr.isEmpty()) {
+                    try {
+                        referencedDocument.setPublicationYear(Integer.valueOf(yearStr));
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error during converting year." + yearStr);
+                    }
+                }
+
+                // Extract publisher
+                String publisher = xpath.evaluate(".//tei:publisher", biblNode);
+                referencedDocument.setPublisher(publisher);
 
                 // Extract authors
                 NodeList authorNodes = (NodeList) xpath.evaluate(".//tei:author/tei:persName", biblNode, XPathConstants.NODESET);
                 List<Author> authors = new ArrayList<>();
 
+                // each author in a reference
                 for (int j = 0; j < authorNodes.getLength(); j++) {
                     Node authorNode = authorNodes.item(j);
 
@@ -112,28 +124,34 @@ public class ReferenceService {
                         authors.add(newAuthor);
                         authorMap.put(authorKey, newAuthor);
                     }
+                }
+                referencedDocument.setAuthors(authors);
 
-                    toDokument.setAuthors(authors);
+                List<String> authorLastNames= authors.stream().map(Author::getLastname).toList();
 
-                    // Extract year of publication
-                    String yearStr = xpath.evaluate(".//tei:date[@type='published']/@when", biblNode);
-                    if (yearStr != null && !yearStr.isEmpty()) {
-                        try {
-                            toDokument.setPublicationYear(Integer.valueOf(yearStr));
-                        } catch (NumberFormatException e) {
-                            System.out.println("Error during converting year." + yearStr);
-                        }
-                    }
+                // check if document exists in dbs
+                boolean exists = documentRepository.existsByTitleAndAuthorsIn(title, authorLastNames);
 
-                    // Extract publisher
-                    String publisher = xpath.evaluate(".//tei:publisher", biblNode);
-                    toDokument.setPublisher(publisher);
+                // check whether the document is already saved in DBS
+                if(exists){
+                    System.out.println("Document with this title and authors already exist");
 
-                    this.documentRepository.save(toDokument);
+                    // vyhľadaj dokument podľa TITLE alebo AUTORA a nastav ho ako toDokument
+
+                    referencedDocument = documentRepository.findByTitleAndAuthorsIn(title, authorLastNames)
+                            .orElseThrow(() -> new IllegalStateException("Document should exist but was NOT FOUND."));
+
+                    this.toDocument = referencedDocument;
+                    System.out.println("Document already exists in database : " + referencedDocument.getTitle() + " with ID : " + referencedDocument.getId());
+                } else {
+                    // create new dokument
+                    this.setToDocument(referencedDocument);
+                    this.documentRepository.save(toDocument);
                     this.authorRepository.saveAll(authors);
-
                 }
 
+                Reference reference = new Reference("[i]", fromDocument, toDocument);
+                referenceRepository.save(reference);
             }
         } catch (Exception e) {
             e.printStackTrace();

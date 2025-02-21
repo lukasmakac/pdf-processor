@@ -15,7 +15,8 @@ import java.util.regex.Pattern;
 // TODO :
 //  1. VALIDATE author based on surname and first INITIAL of the firstName.
 //      SOLUTION : change keys of the map on surname and first initial and compare it with surname and first initial of author
-//  2.
+//  2. dve mená autora nesprávne ukladá (priezivsko neuloží, zistiť teda formát aby sa správne ukladalo)
+//  3. ukladá viac krát meno toho istého autora, zistiť prečo !!!
 
 @Service
 public class HeaderService {
@@ -121,12 +122,12 @@ public class HeaderService {
             String[] nameParts = fullName.split(",");
 
             String firstName;
-            String lastName = nameParts[1].trim();
+            String lastName = nameParts[0].trim();
             if(nameParts.length > 2){
                 // have two names
-                firstName = nameParts[0].trim() + " " + nameParts[2].trim();
+                firstName = nameParts[1].trim() + " " + nameParts[2].trim();
             } else {
-                firstName = nameParts[0].trim();
+                firstName = nameParts[1].trim();
             }
 
             String authorKey = lastName.toLowerCase() + "," + firstName.toLowerCase();

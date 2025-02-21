@@ -6,6 +6,9 @@ import org.hibernate.annotations.Cascade;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO : int / boolean - či je PDF nahraté alebo je to dokument len z referencie
+//    1. references -
+
 @Entity
 @Table(name = "documents")
 public class Dokument {
