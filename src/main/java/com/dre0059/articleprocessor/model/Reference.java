@@ -21,8 +21,8 @@ public class Reference {
     private Dokument toDocument;
 
     public Reference() {}
-    public Reference(String orderNumber, Dokument fromDocument, Dokument toDocument) {
-        this.orderNumber = orderNumber;
+    public Reference(/*String orderNumber,*/ Dokument fromDocument, Dokument toDocument) {
+        //this.orderNumber = orderNumber;
         this.fromDocument = fromDocument;
         this.toDocument = toDocument;
     }

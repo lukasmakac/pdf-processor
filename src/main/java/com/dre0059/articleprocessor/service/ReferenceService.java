@@ -87,6 +87,9 @@ public class ReferenceService {
 
                 // Extract title - toDocument
                 String title = xpath.evaluate(".//tei:title[@level='m' or @level='a']", biblNode);
+                if(title.isBlank()){
+                    title = xpath.evaluate(".//tei:title[@level='j']", biblNode);
+                }
                 referencedDocument.setTitle(title);
 
                 // Extract year of publication
@@ -102,6 +105,10 @@ public class ReferenceService {
                 // Extract publisher
                 String publisher = xpath.evaluate(".//tei:publisher", biblNode);
                 referencedDocument.setPublisher(publisher);
+
+                // Extract publisher
+                String target = xpath.evaluate(".//tei:ptr/@target", biblNode);
+                referencedDocument.setTarget(target);
 
                 // Extract authors
                 NodeList authorNodes = (NodeList) xpath.evaluate(".//tei:author/tei:persName", biblNode, XPathConstants.NODESET);
@@ -128,7 +135,6 @@ public class ReferenceService {
                 referencedDocument.setAuthors(authors);
 
                 List<String> authorLastNames= authors.stream().map(Author::getLastname).toList();
-
                 // check if document exists in dbs
                 boolean exists = documentRepository.existsByTitleAndAuthorsIn(title, authorLastNames);
 
@@ -145,12 +151,19 @@ public class ReferenceService {
                     System.out.println("Document already exists in database : " + referencedDocument.getTitle() + " with ID : " + referencedDocument.getId());
                 } else {
                     // create new dokument
+                    referencedDocument.setStatus("Referenced");
                     this.setToDocument(referencedDocument);
                     this.documentRepository.save(toDocument);
                     this.authorRepository.saveAll(authors);
                 }
 
-                Reference reference = new Reference("[i]", fromDocument, toDocument);
+                Reference reference = new Reference(/*referenceID,*/ fromDocument, toDocument);
+
+                // extract ID from the document
+                String referenceID = xpath.evaluate("@*[local-name()='id']", biblNode);
+                System.out.println("referenceID: " + referenceID);
+                reference.setOrderNumber(referenceID);
+
                 referenceRepository.save(reference);
             }
         } catch (Exception e) {

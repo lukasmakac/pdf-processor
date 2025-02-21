@@ -84,7 +84,7 @@ public class HeaderService {
         }
 
         List<Author> savedAuthors = authorRepository.saveAll(authorList);
-        Dokument dokument = new Dokument(title, year, doi, pages, publisher);
+        Dokument dokument = new Dokument(title, year, doi, publisher, "PDF");
 
         dokument.setAuthors(savedAuthors);
         this.documentRepository.save(dokument);

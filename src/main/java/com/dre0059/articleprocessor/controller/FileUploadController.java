@@ -58,8 +58,8 @@ public class FileUploadController {
             headerService.processHeader(header);
             referenceService.extractReferences(references);
 
-            System.out.println(header);
-            //System.out.println(references);
+            //System.out.println(header);
+            System.out.println(references);
 
             tmpFile.delete();
 

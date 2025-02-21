@@ -28,8 +28,9 @@ public class Dokument {
     //@Column(name = "abstractText", columnDefinition = "TEXT")
     //private String abstractText;
 
-    private Integer pages;
+    private String status; // if the value is PDF - the whole document was uploaded, otherwise the document was just mentioned in references
     private String publisher;
+    private String target; // http link
 
     @OneToMany(mappedBy = "fromDocument", cascade = CascadeType.ALL)
     private List<Reference> references = new ArrayList<>();
@@ -46,13 +47,12 @@ public class Dokument {
 
     public Dokument() {}
 
-    public Dokument(String title, Integer year, String doi, /*String abstractText,*/ Integer pages, String publisher) {
+    public Dokument(String title, Integer year, String doi,String publisher, String status) {
         this.title = title;
         this.publicationYear = year;
         this.doi = doi;
-        //this.abstractText = abstractText;
-        this.pages = pages;
         this.publisher = publisher;
+        this.status = status;
     }
 
     public Long getId() { return id; }
@@ -60,7 +60,7 @@ public class Dokument {
     public Integer getYear() { return publicationYear; }
     public String getDoi() { return doi; }
     //public String getAbstractText() { return abstractText; }
-    public Integer getPages() { return pages; }
+    public String getStatus() { return status; }
     public String getPublisher() { return publisher; }
     public List<Reference> getReferences() { return references; }
     public List<Author> getAuthors() { return authors; }
@@ -68,6 +68,7 @@ public class Dokument {
 
     public void setAuthors(List<Author> authors) { this.authors = authors; }
     public void setTitle(String title) { this.title = title; }
+    public void setTarget(String target) { this.target = target; }
 
     public void setPublicationYear(Integer publicationYear) {
         this.publicationYear = publicationYear;
@@ -77,8 +78,8 @@ public class Dokument {
         this.doi = doi;
     }
 
-    public void setPages(Integer pages) {
-        this.pages = pages;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public void setPublisher(String publisher) {
