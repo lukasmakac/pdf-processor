@@ -6,7 +6,7 @@ import com.dre0059.articleprocessor.model.Dokument;
 import java.util.List;
 import org.mapstruct.Mapper;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface DocumentMapper {
 
   DocumentDto toDocumentDto(Dokument entity);
