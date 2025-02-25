@@ -40,4 +40,13 @@ public class DocumentController {
 
     return "view-pdf";
   }
+
+  @GetMapping("/view")
+  public String viewPdf(Model model) {
+    var references = documentService.getAllReferences();
+
+    model.addAttribute("references", references);
+
+    return "view-all";
+  }
 }

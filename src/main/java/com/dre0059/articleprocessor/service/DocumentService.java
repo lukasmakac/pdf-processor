@@ -36,6 +36,11 @@ public class DocumentService {
   }
 
   @Transactional
+  public List<SimpleDocumentDto> getAllReferences() {
+    return documentMapper.toSimpleDocumentList(documentRepository.findAll());
+  }
+
+  @Transactional
   public Dokument saveDocument(Dokument document) {
     Dokument dok = new Dokument();
     return dok;

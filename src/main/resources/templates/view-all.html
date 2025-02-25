@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload PDF</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    #pdf-preview {
+      width: 500px;
+      height: 600px;
+      border: 1px solid #ddd;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+<h1>PDF files</h1>
+
+<!-- zobrazenie PDF -->
+<div id="pdf-container">
+  <iframe id="pdf-preview" src="" style="display: none;"></iframe>
+</div>
+
+<table>
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Title</th>
+    <th>Link</th>
+  </tr>
+  </thead>
+  <tbody>
+    <tr th:each="ref: ${references}">
+      <td th:text="${ref.id}"></td>
+      <td th:text="${ref.title}"></td>
+      <td><a th:href="@{'/api/document/' + ${ref.id}}" th:text="${ref.title}"></a></td>
+    </tr>
+  </tbody>
+</table>
+
+</body>
+</html>
