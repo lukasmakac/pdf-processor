@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.util.*;
 
+<<<<<<< HEAD
 // TODO :
 //  1. uložiť prepojenie toDocument a fromDocument do tabuľky referencie
 //  2. vytiahnuť orderNumber z referencie (toto riešiť cez GROBID)
@@ -31,6 +32,8 @@ import java.util.*;
 //  5. ak už bolo PDF raz uložené, uloží sa mi "null" článok, prepojený s autormi - VYRIESIT
 
 
+=======
+>>>>>>> 9e1c76c (Categories of PDF initialized)
 @Service
 public class ReferenceService {
 

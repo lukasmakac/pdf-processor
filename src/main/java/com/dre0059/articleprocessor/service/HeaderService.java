@@ -1,8 +1,15 @@
 package com.dre0059.articleprocessor.service;
 
 import com.dre0059.articleprocessor.model.Author;
+<<<<<<< HEAD
 import com.dre0059.articleprocessor.model.Dokument;
 import com.dre0059.articleprocessor.repository.AuthorRepository;
+=======
+import com.dre0059.articleprocessor.model.Category;
+import com.dre0059.articleprocessor.model.Dokument;
+import com.dre0059.articleprocessor.repository.AuthorRepository;
+import com.dre0059.articleprocessor.repository.CategoryRepository;
+>>>>>>> 9e1c76c (Categories of PDF initialized)
 import com.dre0059.articleprocessor.repository.DocumentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +31,10 @@ public class HeaderService {
     private final DocumentRepository documentRepository;
     private final AuthorRepository authorRepository;
     private final ReferenceService referenceService;
+<<<<<<< HEAD
+=======
+    private final CategoryRepository categoryRepository;
+>>>>>>> 9e1c76c (Categories of PDF initialized)
 
     //public Dokument(String title, Integer year, String doi, String abstractText, Integer pages, String publisher) {
 
@@ -36,6 +47,7 @@ public class HeaderService {
     private List<Author> authorList = new ArrayList<>();
 
     private String author;
+<<<<<<< HEAD
 
     @Autowired
     public HeaderService(DocumentRepository documentRepository, AuthorRepository authorRepository, ReferenceService referenceService) {
@@ -45,6 +57,19 @@ public class HeaderService {
     }
 
     public void processHeader(String header){
+=======
+    private Category category;
+
+    @Autowired
+    public HeaderService(DocumentRepository documentRepository, AuthorRepository authorRepository, ReferenceService referenceService, CategoryRepository categoryRepository) {
+        this.documentRepository = documentRepository;
+        this.authorRepository = authorRepository;
+        this.referenceService = referenceService;
+        this.categoryRepository = categoryRepository;
+    }
+
+    public void processHeader(String header, Optional<Category> category) {
+>>>>>>> 9e1c76c (Categories of PDF initialized)
         this.title = this.parseHeaderFields(header, "title");
 
         if(!this.parseHeaderFields(header, "doi").equals("Not found")){
@@ -74,7 +99,10 @@ public class HeaderService {
         System.out.println("Author list before checking duplicity: " + authorList);
         System.out.println("Author last names before checking duplicity: " + authorLastNames);
 
+<<<<<<< HEAD
         // tu dostávam error :
+=======
+>>>>>>> 9e1c76c (Categories of PDF initialized)
         boolean headerDuplicity = documentRepository.existsByTitleAndAuthorsIn(title, authorLastNames);
 
         // check duplicity of the document
@@ -86,8 +114,18 @@ public class HeaderService {
         List<Author> savedAuthors = authorRepository.saveAll(authorList);
         Dokument dokument = new Dokument(title, year, doi, publisher, "PDF");
 
+<<<<<<< HEAD
         dokument.setAuthors(savedAuthors);
         this.documentRepository.save(dokument);
+=======
+        //dokument.setCategory(category.get());
+        dokument.setAuthors(savedAuthors);
+
+        System.out.println("Category: " + category);
+        category.ifPresent(dokument::setCategory);
+
+        this.documentRepository.save(dokument); // output : Optional.empty
+>>>>>>> 9e1c76c (Categories of PDF initialized)
 
         // set the document, which has the list of references
         referenceService.setFromDocument(dokument);
