@@ -32,8 +32,6 @@ public interface DocumentRepository extends JpaRepository<Dokument, Long> {
     )
     Optional<Dokument> findByTitleAndAuthorsIn(@Param("title") String title, @Param("lastNames") List<String> lastNames);
 
-<<<<<<< HEAD
-=======
 
     @Query(
         """
@@ -44,7 +42,6 @@ public interface DocumentRepository extends JpaRepository<Dokument, Long> {
     )
     List<Dokument> getReferencedDocumentsById(@Param("id") Long id);
 
->>>>>>> 9e1c76c (Categories of PDF initialized)
 }
 
 /*
