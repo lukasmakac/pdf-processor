@@ -6,11 +6,6 @@ import org.hibernate.annotations.Cascade;
 import java.util.ArrayList;
 import java.util.List;
 
-<<<<<<< HEAD
-// TODO : int / boolean - či je PDF nahraté alebo je to dokument len z referencie
-//    1. references -
-=======
->>>>>>> 9e1c76c (Categories of PDF initialized)
 
 @Entity
 @Table(name = "documents")
@@ -27,13 +22,10 @@ public class Dokument {
     private Integer publicationYear;
     private String doi;
 
-<<<<<<< HEAD
-=======
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
 
->>>>>>> 9e1c76c (Categories of PDF initialized)
     // @Lob for huge text
     //@Column(name = "abstractText", columnDefinition = "TEXT")
     //private String abstractText;
@@ -79,28 +71,6 @@ public class Dokument {
     public void setAuthors(List<Author> authors) { this.authors = authors; }
     public void setTitle(String title) { this.title = title; }
     public void setTarget(String target) { this.target = target; }
-<<<<<<< HEAD
-
-    public void setPublicationYear(Integer publicationYear) {
-        this.publicationYear = publicationYear;
-    }
-
-    public void setDoi(String doi) {
-        this.doi = doi;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public void setPublisher(String publisher) {
-        this.publisher = publisher;
-    }
-
-    public void setReferences(List<Reference> references) {
-        this.references = references;
-    }
-=======
     public void setPublicationYear(Integer publicationYear) {
         this.publicationYear = publicationYear;
     }
@@ -117,5 +87,4 @@ public class Dokument {
         this.references = references;
     }
     public void setCategory(Category category) { this.category = category;}
->>>>>>> 9e1c76c (Categories of PDF initialized)
 }
