@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Upload PDF</title>
+  <title>View PDF files</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
     #pdf-preview {
@@ -32,10 +32,10 @@
   </tr>
   </thead>
   <tbody>
-    <tr th:each="ref: ${references}">
-      <td th:text="${ref.id}"></td>
-      <td th:text="${ref.title}"></td>
-      <td><a th:href="@{'/api/document/' + ${ref.id}}" th:text="${ref.title}"></a></td>
+    <tr th:each="doc: ${documents}">
+      <td th:text="${doc.id}"></td>
+      <td th:text="${doc.title}"></td>
+      <td><a th:href="@{'/view/' + ${doc.id}}" th:text="${doc.title}"></a></td>
     </tr>
   </tbody>
 </table>

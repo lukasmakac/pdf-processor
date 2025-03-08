@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Upload PDF</title>
+  <title>View single PDF</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
     #pdf-preview {
@@ -18,11 +18,6 @@
 <body>
 <h1>PDF files</h1>
 
-<!-- zobrazenie PDF -->
-<div id="pdf-container">
-  <iframe id="pdf-preview" src="" style="display: none;"></iframe>
-</div>
-
 <table>
   <thead>
   <tr>
@@ -35,10 +30,15 @@
     <tr th:each="ref: ${references}">
       <td th:text="${ref.id}"></td>
       <td th:text="${ref.title}"></td>
-      <td><a th:href="@{'/api/document/' + ${ref.id}}" th:text="${ref.title}"></a></td>
+      <td><a th:href="@{'/view/' + ${ref.id}}" th:text="${ref.title}"></a></td>
     </tr>
   </tbody>
 </table>
+
+<!-- zobrazenie PDF -->
+<div id="pdf-container">
+  <embed th:src="@{'/api/documents/' + ${documentId} + '/content'}" type="application/pdf" width="960px" height="480px"/>
+</div>
 
 </body>
 </html>

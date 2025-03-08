@@ -40,7 +40,7 @@ public interface DocumentRepository extends JpaRepository<Dokument, Long> {
         WHERE d.id = :id
         """
     )
-    List<Dokument> getReferencedDocumentsById(@Param("id") Long id);
+    List<Dokument> getReferencedDocumentsById(@Param("id") Long fromDocumentId);
 
 }
 

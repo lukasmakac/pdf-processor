@@ -25,9 +25,7 @@
 
             <label for="category">Select Category:</label>
             <select id="category" name="category">
-                <option value="1.4 Chemical sciences">1.4 Chemical sciences</option>
-                <option value="1.5 Earth and related environmental sciences">1.5 Earth and related environmental sciences</option>
-                <option value="1.6 Biological sciences">1.6 Biological sciences</option>
+                <option th:each="c: ${categories}" th:value="${c.getId()}" th:text="${c.getName()}"></option>
             </select>
 
             <button type = "submit">Upload & Process the PDF</button>
@@ -72,10 +70,10 @@
 
                 const formData = new FormData();
                 formData.append("file", fileInput);
-                formData.append("category", category); // Posielame aj kategóriu
+                formData.append("categoryId", category); // Posielame aj kategóriu
 
                 $.ajax({
-                    url: "/api/grobid/upload",
+                    url: "/api/upload",
                     type : "POST",
                     data : formData,
                     processData : false,
