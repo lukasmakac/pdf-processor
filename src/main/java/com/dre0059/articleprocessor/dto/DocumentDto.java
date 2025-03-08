@@ -73,4 +73,5 @@ public class DocumentDto {
   public void setTarget(String target) {
     this.target = target;
   }
+
 }

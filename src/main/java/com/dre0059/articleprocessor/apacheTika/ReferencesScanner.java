@@ -1,15 +1,16 @@
 package com.dre0059.articleprocessor.apacheTika;
 
-import org.apache.tika.Tika;
-import org.apache.tika.exception.TikaException;
-
-import javax.sound.midi.Soundbank;
-import java.io.*;
-import java.util.ArrayList;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.tika.Tika;
+import org.apache.tika.exception.TikaException;
 
 
 public class ReferencesScanner {

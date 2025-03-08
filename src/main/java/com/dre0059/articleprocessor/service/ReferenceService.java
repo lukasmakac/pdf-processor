@@ -1,35 +1,28 @@
 package com.dre0059.articleprocessor.service;
 
-import com.dre0059.articleprocessor.model.*;
-import com.dre0059.articleprocessor.repository.*;
-import jakarta.transaction.Transactional;
+import com.dre0059.articleprocessor.model.Author;
+import com.dre0059.articleprocessor.model.Dokument;
+import com.dre0059.articleprocessor.model.Reference;
+import com.dre0059.articleprocessor.repository.AuthorRepository;
+import com.dre0059.articleprocessor.repository.DocumentRepository;
+import com.dre0059.articleprocessor.repository.ReferenceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringReader;
-import java.util.*;
-
-// TODO :
-//  1. uložiť prepojenie toDocument a fromDocument do tabuľky referencie
-//  2. vytiahnuť orderNumber z referencie (toto riešiť cez GROBID)
-//  3. aktuálne sa mi toDocument ukladá vždy ako nový.. ja ho potrebujem vyhľadať a na základe toho uložiť alebo prepojiť
-//  4. uložiť záznam do tabuľky references
-//  5. ak už bolo PDF raz uložené, uloží sa mi "null" článok, prepojený s autormi - VYRIESIT
-
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class ReferenceService {

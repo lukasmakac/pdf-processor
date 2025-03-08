@@ -1,5 +1,7 @@
 package com.dre0059.articleprocessor;
 
+import com.dre0059.articleprocessor.config.GrobidProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -14,9 +16,10 @@ import java.io.File;
 public class GrobidClient {
     private final WebClient webClient;
 
-    public GrobidClient() {
-        this.webClient = WebClient.builder()
-                .baseUrl("http://158.196.98.65:8080")   // URL kde beží GROBID server
+  public GrobidClient(GrobidProperties grobidProperties) {
+
+    this.webClient = WebClient.builder()
+                .baseUrl(grobidProperties.getHost())   // URL kde beží GROBID server
                 .build();
     }
 
