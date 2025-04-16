@@ -54,7 +54,7 @@ public class HeaderService {
         this.categoryRepository = categoryRepository;
     }
 
-    public void processHeader(String header, String categoryId, File pdfFile) {
+    public Dokument processHeader(String header, String categoryId, File pdfFile) {
         this.title = this.parseHeaderFields(header, "title");
 
         if(!this.parseHeaderFields(header, "doi").equals("Not found")){
@@ -87,8 +87,10 @@ public class HeaderService {
         // check duplicity of the document
         if(documentRepository.existsByTitleAndAuthorsIn(title, authorLastNames)){
             System.out.println("Document with this title and authors already exist");
-            return;
+            return null;
         }
+
+        Dokument dok = new Dokument(title, year, doi, publisher, "PDF");
 
         List<Author> savedAuthors = authorRepository.saveAll(authorList);
         Dokument dokument = new Dokument(title, year, doi, publisher, "PDF");
@@ -105,11 +107,12 @@ public class HeaderService {
           System.err.println("Nepodarilo sa ulozit obsah suboru");
         }
 
-        this.documentRepository.save(dokument); // output : Optional.empty
+        Dokument saved = this.documentRepository.save(dokument); // output : Optional.empty
 
         // set the document, which has the list of references
-        referenceService.setFromDocument(dokument);
+        referenceService.setFromDocument(saved);
 
+        return saved;
     }
 
     private String parseHeaderFields(String header, String field){
