@@ -47,6 +47,7 @@ public class FileUploadController {
         }
 
         try {
+            System.out.println("Processing file " + file.getOriginalFilename());
             File tmpFile = File.createTempFile("article-", ".pdf");
 
             // save data from file to tmpFile
@@ -55,12 +56,19 @@ public class FileUploadController {
              } catch (IOException e) {
                 return ResponseEntity.internalServerError().body("FAILURE - cannot process file : " + e.getMessage());
             }
+            //System.out.println("File written to temporary location. ");
 
             String header = grobidClient.processHeader(tmpFile);
+            //System.out.println("GROBID Header processed: " + header);
+
             String references = grobidClient.processReferences(tmpFile);
+            //System.out.println("GROBID Reference processed: " + references);
 
             headerService.processHeader(header, categoryId, tmpFile);
+            //System.out.println("Header saved to database.");
+
             referenceService.extractReferences(references);
+            //System.out.println("References extracted..");
 
             tmpFile.delete();
 

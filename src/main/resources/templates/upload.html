@@ -1,92 +1,158 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Upload PDF</title>
-        <script src = "https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <style>
-            #pdf-preview {
-                width: 500px;
-                height: 600px;
-                border: 1px solid #ddd;
-                margin-top: 10px;
-            }
-        </style>
-    </head>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload PDF</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css" />
 
-    <body>
-        <h1>Upload your PDF</h1>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-        <!-- formular na nahravanie PDF -->
-        <form action="/api/grobid/upload" method="post" id = "uploadForm" enctype = "multipart/form-data">
-            <label for="fileInput">Choose PDF file:</label>
-            <input type = "file" id = "fileInput" name = "file" accept="application/pdf">
+    <link rel="stylesheet" th:href="@{/styles.css}" />
 
-            <label for="category">Select Category:</label>
-            <select id="category" name="category">
-                <option th:each="c: ${categories}" th:value="${c.getId()}" th:text="${c.getName()}"></option>
-            </select>
-
-            <button type = "submit">Upload & Process the PDF</button>
-        </form>
-
-        <!-- zobrazenie PDF -->
-        <div id="pdf-container">
-            <iframe id="pdf-preview" src="" style="display: none;"></iframe>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light static-top">
+    <div class="container">
+        <a class="navbar-brand" href="#">Article Processor</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="/upload">Upload</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/view">View all</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/">About project</a>
+                </li>
+            </ul>
         </div>
+    </div>
+</nav>
 
-        <!-- JSON výstup -->
-        <div id = "response-containter" style="display: none;">
-            <h3>Response : </h3>
-            <pre id = "json-output"></pre>
+<header class="masthead">
+    <div class="container position-relative">
+        <div class="row justify-content-center">
+            <div class="col-xl-6">
+                <div class="text-center text-white">
+                    <h1 class="mb-5">Upload your PDF</h1>
+                    <form action="/api/grobid/upload" method="post" id="uploadForm" enctype="multipart/form-data">
+                        <label for="fileInput" class="form-label">Choose PDF file:</label>
+                        <input class="form-control" type="file" id="fileInput" name="file" accept="application/pdf">
+                        <label for="category" class="form-label mt-3">Select Category:</label>
+                        <select class="form-select" id="category" name="category">
+                            <option th:each="c: ${categories}" th:value="${c.getId()}" th:text="${c.getId() + ' ' + c.getName()}"></option>
+                        </select>
+                    </form>
+                </div>
+            </div>
         </div>
+    </div>
+</header>
+<div class="container text-center mt-4">
+    <iframe id="pdf-preview" style="display: none; width: 100%; height: 600px; border: 1px solid #ddd;"></iframe>
+    <div id="upload-button-wrapper" style="display: none;" class="text-center mt-3">
+        <button class="btn btn-primary" type="submit" form="uploadForm">Upload & Process the PDF</button>
+    </div>
 
-        <!--<a href="/api/document/22">click here</a> -->
+</div>
+<div class="container text-center mt-4" id="response-container" style="display: none;">
+    <h3>Response:</h3>
+    <pre id="json-output" class="bg-light p-3 border rounded"></pre>
+</div>
+<script>
+    document.getElementById('fileInput').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file && file.type === 'application/pdf') {
+            const fileURL = URL.createObjectURL(file);
+            const preview = document.getElementById('pdf-preview');
+            preview.src = fileURL;
+            preview.style.display = 'block';
 
-        <!-- .js na zobrazenie PDF -->
-        <script>
-            document.getElementById('fileInput').addEventListener('change', function(event){
-               const file = event.target.files[0];
-               if(file && file.type === 'application/pdf'){
-                   const fileURL = URL.createObjectURL(file);
-                   document.getElementById('pdf-preview').src = fileURL;
-                   document.getElementById('pdf-preview').style.display = 'block';
-               } else {
-                   alert ('Please, choose valid PDF file.');
-               }
-            });
+            document.getElementById('upload-button-wrapper').style.display = 'block';
+            // 👇 Scroll hneď po výbere súboru
+            preview.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+            alert('Please, choose a valid PDF file.');
+        }
+    });
 
-            // AJAX for sending a file
-            $('#uploadForm').submit(function(event) {
-                event.preventDefault();
-                const fileInput = $('#fileInput')[0].files[0];
-                const category = $('#category').val(); // Získanie vybranej kategórie
 
-                if(!fileInput){
-                    alert("Please select a PDF file first.");
-                    return;
+    $('#uploadForm').submit(function(event) {
+        event.preventDefault();
+        const fileInput = $('#fileInput')[0].files[0];
+        const category = $('#category').val();
+        if (!fileInput) {
+            alert("Please select a PDF file first.");
+            return;
+        }
+        const formData = new FormData();
+        formData.append("file", fileInput);
+        formData.append("categoryId", category);
+        $.ajax({
+            url: "/api/upload",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                // Zobrazíme odpoveď do konzoly (môžeš vymazať neskôr)
+                console.log("Upload success:", response);
+
+                // Skontrolujeme, či máme ID
+                if (response.id) {
+                    // Presmerovanie na stránku s detailom
+                    window.location.href = '/view/' + response.id;
+                } else {
+                    alert("Upload completed, but no ID returned.");
                 }
+            },
 
-                const formData = new FormData();
-                formData.append("file", fileInput);
-                formData.append("categoryId", category); // Posielame aj kategóriu
-
-                $.ajax({
-                    url: "/api/upload",
-                    type : "POST",
-                    data : formData,
-                    processData : false,
-                    contentType : false,
-                    success : function(response){
-                        $('#json-output').text(JSON.stringify(response, null, 4));
-                        $('#response-containter').show();
-                    },
-                    error: function(){
-                        alert("Error processing PDF.");
-                    }
-                });
-            });
-        </script>
-    </body>
+            error: function() {
+                alert("Error processing PDF.");
+            }
+        });
+    });
+</script>
+<section class="features-icons bg-light text-center mt-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
+                    <div class="features-icons-icon d-flex"><i class="bi-window m-auto text-primary"></i></div>
+                    <h3>Fully Responsive</h3>
+                    <p class="lead mb-0">This theme will look great on any device, no matter the size!</p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
+                    <div class="features-icons-icon d-flex"><i class="bi-layers m-auto text-primary"></i></div>
+                    <h3>Bootstrap 5 Ready</h3>
+                    <p class="lead mb-0">Featuring the latest build of the new Bootstrap 5 framework!</p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="features-icons-item mx-auto mb-0 mb-lg-3">
+                    <div class="features-icons-icon d-flex"><i class="bi-terminal m-auto text-primary"></i></div>
+                    <h3>Easy to Use</h3>
+                    <p class="lead mb-0">Ready to use with your own content, or customize the source files!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<footer class="footer bg-light mt-5">
+    <div class="container text-center">
+        <p class="text-muted small">&copy; Your Website 2023. All Rights Reserved.</p>
+    </div>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>

@@ -45,8 +45,14 @@ public class DocumentController {
   public String viewDocument(Model model, @PathVariable("id") Long id) {
     var references = documentService.getReferencedDocumentsById(id);
 
+    if (documentService.getDocumentById(id) == null) {
+      throw new IllegalArgumentException("Document with ID " + id + " not found.");
+    }
+
     model.addAttribute("documentId", id);
     model.addAttribute("references", references);
+    model.addAttribute("docTitle", documentService.getDocumentById(id).getTitle());
+
 
     return "view-pdf";
   }

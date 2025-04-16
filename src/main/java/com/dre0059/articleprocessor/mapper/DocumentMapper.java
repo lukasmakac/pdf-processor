@@ -11,7 +11,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface DocumentMapper {
 
-  @Mapping(target = "publicationYear", source = "year")
+  //@Mapping(target = "publication_year", source = "year")
   DocumentDto toDocumentDto(Dokument entity);
 
   DocumentContentDto toDocumentContentDto(Dokument entity);
