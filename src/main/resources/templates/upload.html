@@ -61,6 +61,11 @@
     <div id="upload-button-wrapper" style="display: none;" class="text-center mt-3">
         <button class="btn btn-primary" type="submit" form="uploadForm">Upload & Process the PDF</button>
     </div>
+    <div id="processing-message" class="mt-3 text-primary" style="display: none; font-weight: bold;">
+        Processing PDF<span id="dots"></span>
+    </div>
+
+
 
 </div>
 <div class="container text-center mt-4" id="response-container" style="display: none;">
@@ -87,15 +92,31 @@
 
     $('#uploadForm').submit(function(event) {
         event.preventDefault();
+
+        // animovane bodky
+        let dotCount = 0;
+        const dotsElement = document.getElementById('dots');
+        const dotInterval = setInterval(() => {
+            dotCount = (dotCount + 1) % 4;
+            dotsElement.textContent = ' .'.repeat(dotCount);
+        }, 500);
+
+        // Zobraz správy o spracovaní
+        document.getElementById('processing-message').style.display = 'block';
+
+
         const fileInput = $('#fileInput')[0].files[0];
         const category = $('#category').val();
         if (!fileInput) {
             alert("Please select a PDF file first.");
+            $('#processing-message').hide();
             return;
         }
+
         const formData = new FormData();
         formData.append("file", fileInput);
         formData.append("categoryId", category);
+
         $.ajax({
             url: "/api/upload",
             type: "POST",
@@ -103,23 +124,28 @@
             processData: false,
             contentType: false,
             success: function(response) {
-                // Zobrazíme odpoveď do konzoly (môžeš vymazať neskôr)
-                console.log("Upload success:", response);
+                clearInterval(dotInterval);
 
-                // Skontrolujeme, či máme ID
+                $('#processing-message').hide();
+
+                console.log("Upload success:", response);
                 if (response.id) {
-                    // Presmerovanie na stránku s detailom
                     window.location.href = '/view/' + response.id;
                 } else {
                     alert("Upload completed, but no ID returned.");
                 }
             },
-
             error: function() {
+                clearInterval(dotInterval);
+
+                $('#processing-message').hide();
                 alert("Error processing PDF.");
             }
         });
     });
+
+
+
 </script>
 <section class="features-icons bg-light text-center mt-5">
     <div class="container">

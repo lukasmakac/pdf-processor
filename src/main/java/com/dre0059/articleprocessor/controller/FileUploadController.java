@@ -45,7 +45,7 @@ public class FileUploadController {
 
     @PostMapping("/api/upload")
     @ResponseBody
-    public ResponseEntity<String> handleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam("categoryId") String categoryId) {
+    public ResponseEntity<?> handleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam("categoryId") String categoryId) {
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("No file uploaded!");
         }
@@ -80,11 +80,10 @@ public class FileUploadController {
             response.put("id", savedDocument.getId());
             response.put("message", "Upload successful");
 
-            return ResponseEntity.ok(header);
+            return ResponseEntity.ok(response);
 
 
         } catch (IOException e) {
-            System.out.println("Chyba pri vytváraní dočasného súboru" + e);
             return ResponseEntity.status(500).body("Chyba pri vytváraní dočasného súboru.");
         }
     }
