@@ -10841,7 +10841,8 @@ textarea.form-control-lg {
 
 header.masthead {
     position: relative;
-    background: #343a40 url("/static/assets/img/bg_pdf.png ") no-repeat center center;
+    background: linear-gradient(45deg, #0dcaf0 , #343a40, #1c375e, #d4af37);
+    /*background: #343a40 url("static/assets/img/bg_pdf.png?v=2") no-repeat center center !important;*/
     background-size: cover;
     padding-top: 8rem;
     padding-bottom: 8rem;
@@ -10896,11 +10897,31 @@ header.masthead h1, header.masthead .h1 {
 
 .call-to-action {
     position: relative;
-    background: #343a40 url("/static/assets/img/bg_pdf.png") no-repeat center center;
+    background: linear-gradient(45deg, #0dcaf0 , #343a40, #1c375e, #d4af37);
+    /* background: #343a40 url("static/assets/img/bg_pdf.png?v=2") no-repeat center center !important; */
     background-size: cover;
     padding-top: 7rem;
     padding-bottom: 7rem;
 }
+
+@keyframes gradientAnimation {
+    0% {
+        background: linear-gradient(45deg, #343a40, #1c375e, #d4af37);
+    }
+    25% {
+        background: linear-gradient(45deg, #d4af37, #1c375e, #343a40);
+    }
+    50% {
+        background: linear-gradient(45deg, #1c375e, #d4af37, #343a40);
+    }
+    75% {
+        background: linear-gradient(45deg, #343a40, #d4af37, #1c375e);
+    }
+    100% {
+        background: linear-gradient(45deg, #343a40, #1c375e, #d4af37);
+    }
+}
+
 .call-to-action:before {
     content: "";
     position: absolute;
