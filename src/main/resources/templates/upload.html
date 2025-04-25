@@ -82,7 +82,7 @@
     </div>
 </header>
 <div class="container text-center mt-4">
-    <iframe id="pdf-preview" style="display: none; width: 100%; height: 600px; border: 1px solid #ddd;"></iframe>
+    <embed id="pdf-preview" style="display: none; width: 100%; height: 600px; border: 1px solid #ddd;"></embed>
     <div id="upload-button-wrapper" style="display: none;" class="text-center mt-3">
         <button class="btn btn-primary" type="submit" form="uploadForm">Upload & Process the PDF</button>
     </div>
@@ -107,7 +107,7 @@
             preview.style.display = 'block';
 
             document.getElementById('upload-button-wrapper').style.display = 'block';
-            // 👇 Scroll hneď po výbere súboru
+            // Scroll hneď po výbere súboru
             preview.scrollIntoView({ behavior: 'smooth', block: 'start' });
         } else {
             alert('Please, choose a valid PDF file.');

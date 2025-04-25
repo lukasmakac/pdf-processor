@@ -36,7 +36,7 @@ public class FileUploadController {
         this.categoryService = categoryService;
     }
 
-    @GetMapping("/upload")
+    @GetMapping(value = {"/upload","/"})
     public String showUploadForm(Model model) {
         var categories = categoryService.getAll();
         model.addAttribute("categories", categories);

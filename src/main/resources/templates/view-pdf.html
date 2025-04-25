@@ -63,7 +63,7 @@
 
 <!-- Page Heading -->
 <div class="container mt-4">
-  <h2>Title: <span th:text="${docTitle}"></span></h2> <!-- title aktuálneho dokumentu -->
+  <h2>Title: <br><span th:text="${docTitle}"></span></h2> <!-- title aktuálneho dokumentu -->
 
   <div class="row mt-4">
     <!-- Left Column: Text Info -->
@@ -71,7 +71,6 @@
       <h3>Information about Document</h3>
       <p>Category: <span th:text="${category}"></span></p>
       <p>Author: <span th:text="${author}"></span></p>
-      <p>Title: <span th:text="${docTitle}"></span></p>
       <p>Publication year: <span th:text="${year}"></span></p>
       <p>DOI: <span th:text="${doi}"></span></p>
       <p>Link: <span th:text="${link}"></span></p>
@@ -100,7 +99,7 @@
     <!-- Right Column: PDF -->
     <div class="col-md-6">
       <div id="pdf-container" class="mb-4">
-        <embed th:src="@{'/api/documents/' + ${documentId} + '/content'}" type="application/pdf" width="100%" height="600px"/>
+        <embed th:src="@{'/api/documents/' + ${documentId} + '/content'}" type="application/pdf" width="100%" height="1000px"/>
       </div>
     </div>
   </div>
