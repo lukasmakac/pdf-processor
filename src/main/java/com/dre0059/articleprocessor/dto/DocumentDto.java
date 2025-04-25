@@ -3,6 +3,9 @@ package com.dre0059.articleprocessor.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 public class DocumentDto {
@@ -15,5 +18,5 @@ public class DocumentDto {
   private String publisher;
   private String target;
 
-
+  private List<TagDto> tags;
 }

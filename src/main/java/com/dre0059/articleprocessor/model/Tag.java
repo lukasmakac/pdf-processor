@@ -7,8 +7,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
-@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
@@ -21,4 +23,10 @@ public class Tag {
     @Column(nullable = false, unique = true)
     private String title;
 
+    @ManyToMany(mappedBy = "tags")
+    private List<Dokument> documents = new ArrayList<>();
+
+    public Tag(String title) {
+        this.title = title;
+    }
 }

@@ -32,7 +32,9 @@ public class DocumentService {
 
   @Transactional
   public DocumentDto getDocumentById(Long documentId) {
-    Dokument dokument = documentRepository.findById(documentId).orElse(null);
+    //Dokument dokument = documentRepository.findById(documentId).orElse(null);
+    Dokument dokument = documentRepository.findWithTagsById(documentId)
+            .orElseThrow(() -> new IllegalArgumentException("Dokument not found with id: " + documentId));
 
     // Použitie mappera na konverziu dokumentu do DTO
     DocumentDto documentDto = documentMapper.toDocumentDto(dokument);

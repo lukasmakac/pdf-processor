@@ -63,9 +63,19 @@ public class Dokument {
             joinColumns = @JoinColumn(name = "ID_document"),
             inverseJoinColumns = @JoinColumn(name = "ID_author")
     )
-
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Author> authors = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "document_tag",
+            joinColumns = @JoinColumn(name = "document_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    private List<Tag> tags = new ArrayList<>();
+
+
 
     public Dokument() {}
 

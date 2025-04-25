@@ -8,7 +8,7 @@ import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {TagMapper.class})
 public interface DocumentMapper {
 
   //@Mapping(target = "publication_year", source = "year")
@@ -27,5 +27,7 @@ public interface DocumentMapper {
       return new String(bytes);
     }
   }
+
+
 
 }

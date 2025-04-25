@@ -7,6 +7,7 @@
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" type="text/css" />
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -71,10 +72,14 @@
                     <form action="/api/grobid/upload" method="post" id="uploadForm" enctype="multipart/form-data">
                         <label for="fileInput" class="form-label">Choose PDF file:</label>
                         <input class="form-control" type="file" id="fileInput" name="file" accept="application/pdf">
+
                         <label for="category" class="form-label mt-3">Select Category:</label>
                         <select class="form-select" id="category" name="category">
                             <option th:each="c: ${categories}" th:value="${c.getId()}" th:text="${c.getId() + ' ' + c.getName()}"></option>
                         </select>
+
+                        <label for="tags" class="form-label mt-3">Tags:</label>
+                        <select class="form-select" id="tags" name="tags" multiple="multiple" style="width: 100%"></select>
                     </form>
                 </div>
             </div>
@@ -97,7 +102,12 @@
     <h3>Response:</h3>
     <pre id="json-output" class="bg-light p-3 border rounded"></pre>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
 <script>
+    // Náhľad PDF súboru
     document.getElementById('fileInput').addEventListener('change', function(event) {
         const file = event.target.files[0];
         if (file && file.type === 'application/pdf') {
@@ -107,18 +117,56 @@
             preview.style.display = 'block';
 
             document.getElementById('upload-button-wrapper').style.display = 'block';
-            // Scroll hneď po výbere súboru
             preview.scrollIntoView({ behavior: 'smooth', block: 'start' });
         } else {
             alert('Please, choose a valid PDF file.');
         }
     });
 
+    // Inicializácia SELECT2 pre tagy
+    $(document).ready(function() {
+        $('#tags').select2({
+            placeholder: "Add or select tags",
+            tags: true,
+            tokenSeparators: [','],
+            ajax: {
+                url: '/api/tags',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        term: params.term.toLowerCase()  // 👈 pošli lowercase na server
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data
+                    };
+                },
+                cache: true
+            },
+            createTag: function (params) {
+                let term = $.trim(params.term.toLowerCase()); // 👈 vytváraj lowercase tagy
 
+                if (term === '') {
+                    return null;
+                }
+
+                return {
+                    id: term,
+                    text: term,
+                    newTag: true
+                };
+            }
+        });
+
+    });
+
+    // Odoslanie formulára
     $('#uploadForm').submit(function(event) {
         event.preventDefault();
 
-        // animovane bodky
+        // animované bodky
         let dotCount = 0;
         const dotsElement = document.getElementById('dots');
         const dotInterval = setInterval(() => {
@@ -126,21 +174,23 @@
             dotsElement.textContent = ' .'.repeat(dotCount);
         }, 500);
 
-        // Zobraz správy o spracovaní
         document.getElementById('processing-message').style.display = 'block';
-
 
         const fileInput = $('#fileInput')[0].files[0];
         const category = $('#category').val();
+        const tags = $('#tags').val(); // Pole stringov z Select2
+
         if (!fileInput) {
             alert("Please select a PDF file first.");
             $('#processing-message').hide();
+            clearInterval(dotInterval);
             return;
         }
 
         const formData = new FormData();
         formData.append("file", fileInput);
         formData.append("categoryId", category);
+        formData.append("tags",tags); // Dôležité!
 
         $.ajax({
             url: "/api/upload",
@@ -150,10 +200,8 @@
             contentType: false,
             success: function(response) {
                 clearInterval(dotInterval);
-
                 $('#processing-message').hide();
 
-                console.log("Upload success:", response);
                 if (response.id) {
                     window.location.href = '/view/' + response.id;
                 } else {
@@ -162,16 +210,14 @@
             },
             error: function() {
                 clearInterval(dotInterval);
-
                 $('#processing-message').hide();
                 alert("Error processing PDF.");
             }
         });
     });
-
-
-
 </script>
+
+
 <section class="features-icons bg-light text-center mt-5">
     <div class="container">
         <div class="row">

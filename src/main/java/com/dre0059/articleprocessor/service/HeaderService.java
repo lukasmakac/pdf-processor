@@ -4,6 +4,7 @@ import com.dre0059.articleprocessor.dto.CategoryDto;
 import com.dre0059.articleprocessor.model.Author;
 import com.dre0059.articleprocessor.model.Category;
 import com.dre0059.articleprocessor.model.Dokument;
+import com.dre0059.articleprocessor.model.Tag;
 import com.dre0059.articleprocessor.repository.AuthorRepository;
 import com.dre0059.articleprocessor.repository.CategoryRepository;
 import com.dre0059.articleprocessor.repository.DocumentRepository;
@@ -16,6 +17,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.dre0059.articleprocessor.repository.TagRepository;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,8 +36,7 @@ public class HeaderService {
     private final AuthorRepository authorRepository;
     private final ReferenceService referenceService;
     private final CategoryRepository categoryRepository;
-
-    //public Dokument(String title, Integer year, String doi, String abstractText, Integer pages, String publisher) {
+    private final TagRepository tagRepository;
 
     private String title;
     private Integer year;
@@ -47,14 +49,19 @@ public class HeaderService {
     private String author;
 
     @Autowired
-    public HeaderService(DocumentRepository documentRepository, AuthorRepository authorRepository, ReferenceService referenceService, CategoryRepository categoryRepository) {
+    public HeaderService(DocumentRepository documentRepository,
+                         AuthorRepository authorRepository,
+                         ReferenceService referenceService,
+                         CategoryRepository categoryRepository,
+                         TagRepository tagRepository) {
         this.documentRepository = documentRepository;
         this.authorRepository = authorRepository;
         this.referenceService = referenceService;
         this.categoryRepository = categoryRepository;
+        this.tagRepository = tagRepository;
     }
 
-    public Dokument processHeader(String header, String categoryId, File pdfFile) {
+    public Dokument processHeader(String header, String categoryId, List<String> tags, File pdfFile) {
         this.title = this.parseHeaderFields(header, "title");
 
         if(!this.parseHeaderFields(header, "doi").equals("Not found")){
@@ -100,6 +107,24 @@ public class HeaderService {
 
         System.out.println("Category: " + category);
         dokument.setCategory(category);
+
+
+        List<Tag> tagEntities = new ArrayList<>();
+        for (String tagName : tags) {
+            String lowerCase = tagName.trim().toLowerCase(); // konverzia na lowercase
+
+            Optional<Tag> existingTag = tagRepository.findByTitleIgnoreCase(lowerCase);
+
+            Tag tag = existingTag.orElseGet(() -> {
+                Tag newTag = new Tag(lowerCase);
+                return tagRepository.save(newTag); // uložíme nový iba ak neexistuje
+            });
+
+            tagEntities.add(tag);
+        }
+        dokument.setTags(tagEntities);
+
+
 
         try {
             dokument.setContent(FileUtils.readFileToByteArray(pdfFile));
