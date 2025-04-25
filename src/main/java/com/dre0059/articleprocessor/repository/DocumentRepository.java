@@ -46,20 +46,5 @@ public interface DocumentRepository extends JpaRepository<Dokument, Long> {
     )
     List<Dokument> getReferencedDocumentsById(@Param("id") Long fromDocumentId);
 
+
 }
-
-/*
-    // save only if all authors are the same
-    @Query("""
-        SELECT COUNT(d) > 0
-        FROM Dokument d
-        WHERE d.title = :title
-        AND SIZE(d.authors) = :authorCount
-        AND EXISTS (
-            SELECT 1 FROM Dokument d2 JOIN d2.authors a2
-            WHERE d2.id = d.id AND a2 IN :authors
-        )
-        """)
-    boolean existsByTitleAndAuthors(@Param("title") String title, @Param("authors") List<Author> authors, @Param("authorCount") int authorCount);
-
- */
