@@ -135,7 +135,9 @@
         hole: 0.3,
         marker: {
             colors: ['#1c375e', '#d4af37', '#66ccff', '#ffff66']
-        }
+        },
+        textinfo: 'label+percent+value',  //  názov, percentá aj počet
+        textposition: 'inside'
     };
 
     const pieLayout = {
@@ -143,7 +145,7 @@
         paper_bgcolor: '#6780a3',
         font: { color: '#ffffff' }
     };
-
+/*
     Plotly.newPlot('statusChart', [pieTrace], pieLayout, { responsive: true })
         .then(() => {
         let step = 0;
@@ -161,6 +163,23 @@
 
         animate();
     });
+*/
+    Plotly.newPlot('statusChart', [{
+        type: 'pie',
+        labels: statusLabels,
+        values: statusValues,
+        hole: 0.3,
+        marker: {
+            colors: ['#1c375e', '#d4af37', '#66ccff', '#ffff66']
+        },
+        textinfo: 'label+percent+value',
+        textposition: 'inside'
+    }], {
+        title: 'Documents by Status',
+        paper_bgcolor: '#6780a3',
+        font: { color: '#ffffff' }
+    }, { responsive: true });
+
 
     // 🔵 BAR chart (animated)
     const maxY = Math.max(...categoryValues);
