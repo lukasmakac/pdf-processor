@@ -10,31 +10,28 @@
   <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" />
   <link rel="stylesheet" th:href="@{/styles.css}" />
 
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
   <style>
     .navbar-nav .nav-link {
-      font-size: 1.2rem; /* zväčšenie písma */
-      margin-right: 20px; /* medzera medzi položkami */
-      color: rgb(51, 102, 255); /* farba textu v menu */
+      font-size: 1.2rem;
+      margin-right: 20px;
+      color: rgb(51, 102, 255);
     }
 
-    /* Zmena farby pri hover */
     .navbar-nav .nav-link:hover {
       color: #00134d;
     }
 
     .navbar-nav .nav-link.active {
-      color: rgb(51, 102, 255) !important; /* prepíše bootstrap čiernu */
+      color: rgb(51, 102, 255) !important;
     }
 
     .navbar-nav .nav-link.active:hover {
       color: #00134d !important;
     }
-
   </style>
-
 </head>
 
 <body>
@@ -88,10 +85,8 @@
     <div class="col-md-6">
       <select id="statusFilter" class="form-select">
         <option value="">All Statuses</option>
-        <option value="Processed">Processed</option>
-        <option value="Pending">Pending</option>
-        <option value="Failed">Failed</option>
-        <!-- Pridaj ďalšie statusy podľa potreby -->
+        <option value="PDF">PDF</option>
+        <option value="Referenced">Referenced</option>
       </select>
     </div>
   </div>
@@ -122,6 +117,7 @@
     <p class="text-muted small">&copy; Eliška Kozáčiková 2025. All Rights Reserved.</p>
   </div>
 </footer>
+
 <script>
   $(document).ready(function () {
     const $rows = $('table tbody tr');
@@ -145,10 +141,5 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<footer class="footer bg-light mt-5">
-  <div class="container text-center">
-    <p class="text-muted small">&copy; Eliška Kozáčiková 2025. All Rights Reserved.</p>
-  </div>
-</footer>
 </body>
 </html>
