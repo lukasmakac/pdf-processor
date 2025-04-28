@@ -15,9 +15,13 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Cascade;
 
-
+@Setter
+@Getter
 @Entity
 @Table(name = "documents")
 public class Dokument {
@@ -59,9 +63,19 @@ public class Dokument {
             joinColumns = @JoinColumn(name = "ID_document"),
             inverseJoinColumns = @JoinColumn(name = "ID_author")
     )
-
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Author> authors = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "document_tag",
+            joinColumns = @JoinColumn(name = "document_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    private List<Tag> tags = new ArrayList<>();
+
+
 
     public Dokument() {}
 
@@ -73,41 +87,7 @@ public class Dokument {
         this.status = status;
     }
 
-    public Long getId() { return id; }
-    public String getTitle() { return title; }
-    public Integer getYear() { return publicationYear; }
-    public String getDoi() { return doi; }
-    //public String getAbstractText() { return abstractText; }
-    public String getStatus() { return status; }
-    public String getPublisher() { return publisher; }
-    public List<Reference> getReferences() { return references; }
-    public List<Author> getAuthors() { return authors; }
-    public byte[] getAbstractText() { return abstractText; }
-    public byte[] getContent() { return content; }
-
-    public void setAuthors(List<Author> authors) { this.authors = authors; }
-    public void setTitle(String title) { this.title = title; }
-    public void setTarget(String target) { this.target = target; }
-    public void setPublicationYear(Integer publicationYear) {
-        this.publicationYear = publicationYear;
-    }
-    public void setDoi(String doi) {
-        this.doi = doi;
-    }
-    public void setStatus(String status) {
-        this.status = status;
-    }
-    public void setPublisher(String publisher) {
-        this.publisher = publisher;
-    }
-    public void setReferences(List<Reference> references) {
-        this.references = references;
-    }
-    public void setCategory(Category category) { this.category = category;}
-    public void setAbstractText(byte[] abstractText) { this.abstractText = abstractText; }
-    public void setContent(byte[] content) { this.content = content; }
-
-    public String getTarget() {
-        return target;
+    public Integer getYear(){
+        return publicationYear;
     }
 }

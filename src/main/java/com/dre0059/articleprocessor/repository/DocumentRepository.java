@@ -2,6 +2,7 @@ package com.dre0059.articleprocessor.repository;
 
 import com.dre0059.articleprocessor.model.*;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,6 +14,9 @@ import java.util.Optional;
 // uklada extrahovane data
 @Repository
 public interface DocumentRepository extends JpaRepository<Dokument, Long> {
+
+    @EntityGraph(attributePaths = {"tags"})
+    Optional<Dokument> findWithTagsById(Long id);
 
     @Query(
             "SELECT COUNT(d) > 0 " +
@@ -42,20 +46,5 @@ public interface DocumentRepository extends JpaRepository<Dokument, Long> {
     )
     List<Dokument> getReferencedDocumentsById(@Param("id") Long fromDocumentId);
 
+
 }
-
-/*
-    // save only if all authors are the same
-    @Query("""
-        SELECT COUNT(d) > 0
-        FROM Dokument d
-        WHERE d.title = :title
-        AND SIZE(d.authors) = :authorCount
-        AND EXISTS (
-            SELECT 1 FROM Dokument d2 JOIN d2.authors a2
-            WHERE d2.id = d.id AND a2 IN :authors
-        )
-        """)
-    boolean existsByTitleAndAuthors(@Param("title") String title, @Param("authors") List<Author> authors, @Param("authorCount") int authorCount);
-
- */
