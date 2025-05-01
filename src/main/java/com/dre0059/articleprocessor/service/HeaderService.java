@@ -1,6 +1,5 @@
 package com.dre0059.articleprocessor.service;
 
-import com.dre0059.articleprocessor.dto.CategoryDto;
 import com.dre0059.articleprocessor.model.Author;
 import com.dre0059.articleprocessor.model.Category;
 import com.dre0059.articleprocessor.model.Dokument;
@@ -91,23 +90,17 @@ public class HeaderService {
         System.out.println("Author list before checking duplicity: " + authorList);
         System.out.println("Author last names before checking duplicity: " + authorLastNames);
 
-        // check duplicity of the document
-        if(documentRepository.existsByTitleAndAuthorsIn(title, authorLastNames)){
-            System.out.println("Document with this title and authors already exist");
-            return null;
-        }
-
-        Dokument dok = new Dokument(title, year, doi, publisher, "PDF");
-
         List<Author> savedAuthors = authorRepository.saveAll(authorList);
-        Dokument dokument = new Dokument(title, year, doi, publisher, "PDF");
+        Dokument dokument = documentRepository.findByTitleAndAuthorsIn(title, authorLastNames)
+            .orElse(new Dokument(title, year, doi, publisher, "PDF"));
+
         Category category = categoryRepository.getReferenceById(categoryId);
 
+        dokument.setStatus("PDF");
         dokument.setAuthors(savedAuthors);
 
         System.out.println("Category: " + category);
         dokument.setCategory(category);
-
 
         List<Tag> tagEntities = new ArrayList<>();
         for (String tagName : tags) {
@@ -123,8 +116,6 @@ public class HeaderService {
             tagEntities.add(tag);
         }
         dokument.setTags(tagEntities);
-
-
 
         try {
             dokument.setContent(FileUtils.readFileToByteArray(pdfFile));
@@ -149,7 +140,6 @@ public class HeaderService {
             return matcher.group(1).trim();
         } else
             return "Not found"; // should replace for NULL ?
-
     }
 
     private List<Author> saveAuthorNameAndSurname(String author){

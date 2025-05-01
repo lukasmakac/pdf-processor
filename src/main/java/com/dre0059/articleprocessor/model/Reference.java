@@ -12,11 +12,11 @@ public class Reference {
     // number or letters in reference list
     private String orderNumber;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     @JoinColumn(name = "fromDocument")
     private Dokument fromDocument;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     @JoinColumn(name = "toDocument")
     private Dokument toDocument;
 

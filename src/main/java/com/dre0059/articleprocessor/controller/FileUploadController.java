@@ -2,20 +2,17 @@ package com.dre0059.articleprocessor.controller;
 
 import com.dre0059.articleprocessor.GrobidClient;
 import com.dre0059.articleprocessor.model.Dokument;
-import com.dre0059.articleprocessor.model.Tag;
-import com.dre0059.articleprocessor.repository.TagRepository;
 import com.dre0059.articleprocessor.service.CategoryService;
 import com.dre0059.articleprocessor.service.HeaderService;
 import com.dre0059.articleprocessor.service.ReferenceService;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -91,7 +88,6 @@ public class FileUploadController {
             response.put("message", "Upload successful");
 
             return ResponseEntity.ok(response);
-
 
         } catch (IOException e) {
             return ResponseEntity.status(500).body("Chyba pri vytváraní dočasného súboru.");

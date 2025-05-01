@@ -58,4 +58,9 @@ public class DocumentService {
     return documentMapper.toSimpleDocumentList(documentRepository.findAll());
   }
 
+  @Transactional
+  public void deleteById(Long documentId) {
+    documentRepository.deleteById(documentId);
+  }
+
 }

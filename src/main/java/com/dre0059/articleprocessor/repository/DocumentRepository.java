@@ -27,6 +27,15 @@ public interface DocumentRepository extends JpaRepository<Dokument, Long> {
     )
     boolean existsByTitleAndAuthorsIn(@Param("title") String title, @Param("lastNames") List<String> lastNames);
 
+    @Query(
+        "SELECT COUNT(d) > 0 " +
+            "FROM Dokument d " +
+            "JOIN d.authors a " +
+            "WHERE d.title = :title " +
+            "AND d.status = 'PDF' " +
+            "AND a.lastName IN :lastNames"
+    )
+    boolean existsPDFByTitleAndAuthorsIn(@Param("title") String title, @Param("lastNames") List<String> lastNames);
 
     @Query(
             "SELECT d FROM Dokument d " +

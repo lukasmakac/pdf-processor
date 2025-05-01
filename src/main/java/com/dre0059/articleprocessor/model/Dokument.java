@@ -57,13 +57,15 @@ public class Dokument {
     @OneToMany(mappedBy = "fromDocument", cascade = CascadeType.ALL)
     private List<Reference> references = new ArrayList<>();
 
+    @OneToMany(mappedBy = "toDocument", cascade = CascadeType.ALL)
+    private List<Reference> backReferences = new ArrayList<>();
+
     @ManyToMany
     @JoinTable(
             name = "document_author",
             joinColumns = @JoinColumn(name = "ID_document"),
             inverseJoinColumns = @JoinColumn(name = "ID_author")
     )
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Author> authors = new ArrayList<>();
 
     @ManyToMany
@@ -72,7 +74,6 @@ public class Dokument {
             joinColumns = @JoinColumn(name = "document_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Tag> tags = new ArrayList<>();
 
 

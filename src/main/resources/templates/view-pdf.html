@@ -92,7 +92,7 @@
           <tbody>
           <tr th:each="ref: ${references}">
             <td th:text="${ref.id}"></td>
-            <td><a th:href="@{'/view/' + ${ref.id}}" th:text="${ref.title}"></a></td>
+            <td class="text-start"><a th:href="@{'/view/' + ${ref.id}}" th:text="${ref.title}"></a></td>
             <td th:text="${ref.status}">-</td>
           </tr>
           </tbody>
